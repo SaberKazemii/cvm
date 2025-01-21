@@ -19,23 +19,12 @@ import os
 MODEL_URL = "https://www.dropbox.com/scl/fi/cvz8yxl1872m8628mlxn1/best_model.pth?rlkey=mtw4t5gae21lxegh3k842nd66&dl=1"
 
 def download_model(file_path="best_model.pth"):
-    """
-    Download the model file if it does not exist locally, with a progress bar.
-    Args:
-        file_path: Path to save the model file.
-    """
     if not os.path.exists(file_path):
         try:
             print("Downloading model... This may take a while.")
-
-            # Stream the download to get file size
-            response = requests.get(MODEL_URL, stream=True)
-            response.raise_for_status()  # Raise an HTTPError for bad responses (4xx or 5xx)
-
-            # Get the total file size in bytes
+            response = requests.get(MODEL_URL, stream=True, timeout=60)
+            response.raise_for_status()
             total_size = int(response.headers.get('content-length', 0))
-
-            # Save the file with a progress bar
             with open(file_path, "wb") as f, tqdm(
                 desc="Downloading",
                 total=total_size,
@@ -44,14 +33,13 @@ def download_model(file_path="best_model.pth"):
                 unit_divisor=1024,
             ) as progress_bar:
                 for chunk in response.iter_content(chunk_size=8192):
-                    if chunk:  # Filter out keep-alive chunks
+                    if chunk:
                         f.write(chunk)
                         progress_bar.update(len(chunk))
-
             print("Model downloaded successfully.")
         except requests.exceptions.RequestException as e:
             print(f"Error downloading the model: {e}")
-            raise RuntimeError("Failed to download the model file. Please check the URL or your internet connection.")
+            raise RuntimeError("Failed to download the model file.")
     else:
         print("Model file already exists locally.")
 
