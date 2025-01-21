@@ -6,4 +6,4 @@ numpy
 Pillow
 scikit-image
 matplotlib
-tgdm
+tqdm
