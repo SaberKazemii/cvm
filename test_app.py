@@ -19,35 +19,38 @@ import os
 MODEL_URL = "https://www.dropbox.com/scl/fi/cvz8yxl1872m8628mlxn1/best_model.pth?rlkey=mtw4t5gae21lxegh3k842nd66&dl=1"
 
 def download_model(file_path="best_model.pth"):
+    """
+    Download the model file with a progress bar shown in the Streamlit app.
+    Args:
+        file_path: Path to save the model file.
+    """
     if not os.path.exists(file_path):
         try:
-            print("Downloading model... This may take a while.")
+            st.write("Downloading model... This may take a while.")
             response = requests.get(MODEL_URL, stream=True, timeout=60)
-            response.raise_for_status()  # Raise HTTPError for bad responses (4xx and 5xx)
+            response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
 
             # Get the total file size
             total_size = int(response.headers.get('content-length', 0))
+            bytes_downloaded = 0
 
-            # Use tqdm to show download progress
+            # Streamlit progress bar
+            progress_bar = st.progress(0)
+
             with open(file_path, "wb") as f:
-                with tqdm(
-                    desc="Downloading",
-                    total=total_size,
-                    unit="B",
-                    unit_scale=True,
-                    unit_divisor=1024,
-                ) as progress_bar:
-                    for chunk in response.iter_content(chunk_size=8192):
-                        if chunk:  # Filter out keep-alive chunks
-                            f.write(chunk)
-                            progress_bar.update(len(chunk))
+                for chunk in response.iter_content(chunk_size=8192):
+                    if chunk:
+                        f.write(chunk)
+                        bytes_downloaded += len(chunk)
+                        progress = bytes_downloaded / total_size
+                        progress_bar.progress(min(progress, 1.0))  # Update progress bar
 
-            print("Model downloaded successfully.")
+            st.success("Model downloaded successfully.")
         except requests.exceptions.RequestException as e:
-            print(f"Error downloading the model: {e}")
+            st.error(f"Error downloading the model: {e}")
             raise RuntimeError("Failed to download the model file.")
     else:
-        print("Model file already exists locally.")
+        st.info("Model file already exists locally.")
 
 # Download the model before loading it
 download_model()
