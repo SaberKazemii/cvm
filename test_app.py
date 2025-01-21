@@ -9,7 +9,7 @@ import numpy as np
 st.title("Age Stage Prediction App!")
 st.write("The AI model estimates the age of cervical vertebrae by analyzing radiographic images and mimicking the diagnostic accuracy of orthodontic specialists.")
 # Initialize the model
-# st.write("Initializing the model...")
+st.write("Initializing the model...")
 import requests
 import os
 
