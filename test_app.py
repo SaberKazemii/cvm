@@ -77,12 +77,12 @@ def initialize_model(file_path="best_model.pth"):
 model_file_path = download_model()
 model = initialize_model(model_file_path)
 
-# Streamlit app UI
-st.title("Age Stage Prediction App!")
-st.write(
-    "The AI model estimates the age of cervical vertebrae by analyzing radiographic images "
-    "and mimicking the diagnostic accuracy of orthodontic specialists."
-)
+# # Streamlit app UI
+# st.title("Age Stage Prediction App!")
+# st.write(
+#     "The AI model estimates the age of cervical vertebrae by analyzing radiographic images "
+#     "and mimicking the diagnostic accuracy of orthodontic specialists."
+# )
 st.write("Upload an image, and the model will predict!")
 
 # File uploader
