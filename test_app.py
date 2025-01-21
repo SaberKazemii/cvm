@@ -23,19 +23,25 @@ def download_model(file_path="best_model.pth"):
         try:
             print("Downloading model... This may take a while.")
             response = requests.get(MODEL_URL, stream=True, timeout=60)
-            response.raise_for_status()
+            response.raise_for_status()  # Raise HTTPError for bad responses (4xx and 5xx)
+
+            # Get the total file size
             total_size = int(response.headers.get('content-length', 0))
-            with open(file_path, "wb") as f, tqdm(
-                desc="Downloading",
-                total=total_size,
-                unit="B",
-                unit_scale=True,
-                unit_divisor=1024,
-            ) as progress_bar:
-                for chunk in response.iter_content(chunk_size=8192):
-                    if chunk:
-                        f.write(chunk)
-                        progress_bar.update(len(chunk))
+
+            # Use tqdm to show download progress
+            with open(file_path, "wb") as f:
+                with tqdm(
+                    desc="Downloading",
+                    total=total_size,
+                    unit="B",
+                    unit_scale=True,
+                    unit_divisor=1024,
+                ) as progress_bar:
+                    for chunk in response.iter_content(chunk_size=8192):
+                        if chunk:  # Filter out keep-alive chunks
+                            f.write(chunk)
+                            progress_bar.update(len(chunk))
+
             print("Model downloaded successfully.")
         except requests.exceptions.RequestException as e:
             print(f"Error downloading the model: {e}")
