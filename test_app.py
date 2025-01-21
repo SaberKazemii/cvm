@@ -9,6 +9,12 @@ import streamlit as st
 from cs_classifier import ResNet18Classifier  # Ensure this imports correctly
 from transformations import preprocess_image  # Ensure this imports correctly
 
+# Streamlit app
+st.title("Age Stage Prediction App!")
+st.write("The AI model estimates the age of cervical vertebrae by analyzing radiographic images and mimicking the diagnostic accuracy of orthodontic specialists.")
+# Initialize the model
+# st.write("Initializing the model...")
+
 # Dropbox direct download link (ensure 'dl=1' for direct download)
 MODEL_URL = "https://www.dropbox.com/scl/fi/cvz8yxl1872m8628mlxn1/best_model.pth?rlkey=mtw4t5gae21lxegh3k842nd66&dl=1"
 
