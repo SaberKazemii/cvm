@@ -5,4 +5,5 @@ opencv-python-headless
 numpy
 Pillow
 scikit-image
-
+matplotlib
+os
