@@ -2,7 +2,7 @@ import streamlit as st
 from PIL import Image
 import torch
 from transformations import preprocess_image  # Import the preprocessing pipeline
-from classifier_model import ResNet18Classifier  # Import your model definition
+from cs_classifier import ResNet18Classifier  # Import your model definition
 import cv2
 import numpy as np
 # Streamlit app
