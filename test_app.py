@@ -5,7 +5,7 @@ from transformations import preprocess_image  # Import the preprocessing pipelin
 from cs_classifier import ResNet18Classifier  # Import your model definition
 import cv2
 import numpy as np
-import tqdm
+from tqdm import tqdm
 # Streamlit app
 st.title("Age Stage Prediction App!")
 st.write("The AI model estimates the age of cervical vertebrae by analyzing radiographic images and mimicking the diagnostic accuracy of orthodontic specialists.")
