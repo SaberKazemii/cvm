@@ -10,15 +10,58 @@ st.title("Age Stage Prediction App!")
 st.write("The AI model estimates the age of cervical vertebrae by analyzing radiographic images and mimicking the diagnostic accuracy of orthodontic specialists.")
 # Initialize the model
 # st.write("Initializing the model...")
+import requests
+import os
+
+
+# Dropbox direct download link (ensure 'dl=1' for direct download)
+MODEL_URL = "https://www.dropbox.com/scl/fi/cvz8yxl1872m8628mlxn1/best_model.pth?rlkey=mtw4t5gae21lxegh3k842nd66&dl=1"
+
+def download_model(file_path="best_model.pth"):
+    """
+    Download the model file if it does not exist locally.
+    Args:
+        file_path: Path to save the model file.
+    """
+    if not os.path.exists(file_path):
+        try:
+            print("Downloading model... This may take a while.")
+            response = requests.get(MODEL_URL, stream=True)
+            response.raise_for_status()  # Raise an HTTPError for bad responses (4xx or 5xx)
+
+            # Save the file in chunks
+            with open(file_path, "wb") as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    if chunk:  # Filter out keep-alive chunks
+                        f.write(chunk)
+            print("Model downloaded successfully.")
+        except requests.exceptions.RequestException as e:
+            print(f"Error downloading the model: {e}")
+            raise RuntimeError("Failed to download the model file. Please check the URL or your internet connection.")
+    else:
+        print("Model file already exists locally.")
+
+# Download the model before loading it
+download_model()
+
+# Ensure the model file exists before proceeding
+if not os.path.exists("best_model.pth"):
+    raise FileNotFoundError("Model file 'best_model.pth' not found. Download may have failed.")
+
 try:
+    # Initialize the model
+    print("Initializing the model...")
     model = ResNet18Classifier(num_classes=6, input_channels=3)
+
+    # Load the state dictionary
     state_dict = torch.load("best_model.pth", map_location=torch.device('cpu'))
     model.load_state_dict(state_dict)
     model.eval()
-    # st.write("The Trained Deep Learning Model Initialized Successfully.")
+
+    print("The trained deep learning model has been initialized successfully.")
 except Exception as e:
-    st.error(f"Error during model initialization: {e}")
-    st.stop()
+    print(f"Error during model initialization: {e}")
+    raise SystemExit("Model initialization failed. Exiting application.")
 
 
 st.write("Upload an image, and the model will predict!")
