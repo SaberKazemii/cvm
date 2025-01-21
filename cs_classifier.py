@@ -10,7 +10,7 @@ import torch.nn as nn
 import torchvision.models as models
 
 class ResNet18Classifier(nn.Module):
-    def __init__(self, num_classes=6):
+    def __init__(self, num_classes=6, input_channel=3):
         super(ResNet18Classifier, self).__init__()
         
         # Load pre-trained ResNet-18 model
