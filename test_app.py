@@ -5,6 +5,7 @@ from transformations import preprocess_image  # Import the preprocessing pipelin
 from cs_classifier import ResNet18Classifier  # Import your model definition
 import cv2
 import numpy as np
+import tqdm
 # Streamlit app
 st.title("Age Stage Prediction App!")
 st.write("The AI model estimates the age of cervical vertebrae by analyzing radiographic images and mimicking the diagnostic accuracy of orthodontic specialists.")
@@ -19,21 +20,34 @@ MODEL_URL = "https://www.dropbox.com/scl/fi/cvz8yxl1872m8628mlxn1/best_model.pth
 
 def download_model(file_path="best_model.pth"):
     """
-    Download the model file if it does not exist locally.
+    Download the model file if it does not exist locally, with a progress bar.
     Args:
         file_path: Path to save the model file.
     """
     if not os.path.exists(file_path):
         try:
             print("Downloading model... This may take a while.")
+
+            # Stream the download to get file size
             response = requests.get(MODEL_URL, stream=True)
             response.raise_for_status()  # Raise an HTTPError for bad responses (4xx or 5xx)
 
-            # Save the file in chunks
-            with open(file_path, "wb") as f:
+            # Get the total file size in bytes
+            total_size = int(response.headers.get('content-length', 0))
+
+            # Save the file with a progress bar
+            with open(file_path, "wb") as f, tqdm(
+                desc="Downloading",
+                total=total_size,
+                unit="B",
+                unit_scale=True,
+                unit_divisor=1024,
+            ) as progress_bar:
                 for chunk in response.iter_content(chunk_size=8192):
                     if chunk:  # Filter out keep-alive chunks
                         f.write(chunk)
+                        progress_bar.update(len(chunk))
+
             print("Model downloaded successfully.")
         except requests.exceptions.RequestException as e:
             print(f"Error downloading the model: {e}")
